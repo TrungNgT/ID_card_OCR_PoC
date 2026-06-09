@@ -98,6 +98,10 @@ def process_pair(
     try:
         front_prompt = get_front_prompt()
         back_prompt = get_back_prompt()
+
+        headers = {
+            "ngrok-skip-browser-warning": "true"
+        }
         
         payload = {
             "front_img": encode_image_to_base64(front_image),
@@ -111,6 +115,7 @@ def process_pair(
 
         response = requests.post(
             api_endpoint,
+            headers=headers,
             json=payload,
             timeout=timeout
         )
