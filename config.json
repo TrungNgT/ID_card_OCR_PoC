@@ -1,6 +1,6 @@
 {
   "API_ENDPOINT": "https://noncoercively-unspiritualizing-trey.ngrok-free.dev/ocr",
-  "TIMEOUT": 35,
-  "FRONT_PROMPT": "<image>Trả về 1 danh sách các cặp duy nhất [(Số :), (Họ và tên : ), (Ngày, tháng, năm sinh : ),(Giới tính : ), (Quốc tịch : ), (Quê quán :), (Địa chỉ thường trú : )]",
-  "BACK_PROMPT": "<image>Trả về 1 danh sách các cặp duy nhất [(Đặc điểm nhận dạng : ), (Ngày, tháng, năm : )]"
+  "TIMEOUT": 60,
+  "FRONT_PROMPT": "<image>Trả về 1 danh sách các cặp duy nhất [(Số :), (Họ và tên : ), (Ngày, tháng, năm sinh : ),(Giới tính : ), (Quốc tịch : ), (Quê quán :), (Địa chỉ thường trú : ), (Date of expiry : )]",
+  "BACK_PROMPT": "<image>Trả về 1 danh sách các cặp duy nhất [(Đặc điểm nhận dạng : ), (Ngày, tháng, năm cấp thẻ : ))]"
 }

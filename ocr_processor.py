@@ -24,7 +24,7 @@ def encode_image_to_base64(image: Image.Image) -> str:
     return img_base64
 
 
-def process(image: Image.Image, prompt: str = "Extract all text from this ID card") -> Dict[str, Any]:
+def process(image: Image.Image, type_id: int = 0) -> Dict[str, Any]:
     """
     Send image and prompt to OCR API and return the result.
     
@@ -43,18 +43,23 @@ def process(image: Image.Image, prompt: str = "Extract all text from this ID car
         # Encode image to base64
         img_base64 = encode_image_to_base64(image)
         
+        headers = {
+            "ngrok-skip-browser-warning": "true"
+        }
+
         # Prepare payload
         payload = {
-            "image_base64": img_base64,
-            "prompt": prompt
+            "img": img_base64,
+            "prompt": get_front_prompt() if type_id == 0 else get_back_prompt()
         }
         
         # Call API
-        api_endpoint = get_api_endpoint()
+        api_endpoint = get_api_endpoint() + '/v1'
         timeout = get_timeout()
         
         response = requests.post(
             api_endpoint,
+            headers=headers,
             json=payload,
             timeout=timeout
         )
@@ -79,9 +84,7 @@ def process(image: Image.Image, prompt: str = "Extract all text from this ID car
 
 def process_pair(
     front_image: Image.Image,
-    back_image: Image.Image,
-    front_prompt: str = "Extract text from the front side of the ID card.",
-    back_prompt: str = "Extract text from the back side of the ID card."
+    back_image: Image.Image
 ) -> Dict[str, Any]:
     """
     Send both front and back images with respective prompts to the OCR API.
@@ -168,3 +171,58 @@ def process_with_custom_endpoint(
         
     except Exception as e:
         raise Exception(f"Error processing with custom endpoint: {str(e)}")
+
+from PIL import ImageOps
+
+def fit_image(img, size=(400, 250)):
+    return ImageOps.pad(
+        img,
+        size,
+        color="white",
+        centering=(0.5, 0.5)
+    )
+
+import re
+
+
+def parse_front(text: str) -> dict:
+    patterns = {
+        "so": r"Số\s*:\s*(.+)",
+        "ho_va_ten": r"Họ\s*và\s*tên\s*:\s*(.+)",
+        "ngay_sinh": r"Ngày\s*sinh\s*[:\-]?\s*(\d{2}/\d{2}/\d{4})",
+        "gioi_tinh": r"Giới\s*tính\s*:\s*(.+)",
+        "quoc_tich": r"Quốc\s*tịch\s*:\s*(.+)",
+        "que_quan": r"Quê\s*quán\s*:\s*(.+)",
+        "dia_chi_thuong_tru": r"Địa\s*chỉ\s*thường\s*trú\s*:\s*(.+)",
+    }
+
+    result = {}
+
+    for field, pattern in patterns.items():
+        match = re.search(pattern, text, re.IGNORECASE)
+        result[field] = match.group(1).strip() if match else None
+
+    return result
+
+def parse_back(text: str) -> dict:
+    result = {}
+
+    match = re.search(
+        r"Đặc\s*điểm\s*nhận\s*dạng\s*:\s*(.+)",
+        text,
+        re.IGNORECASE
+    )
+    result["dac_diem_nhan_dang"] = (
+        match.group(1).strip() if match else None
+    )
+
+    match = re.search(
+        r"(\d{2}/\d{2}/\d{4})",
+        text
+    )
+    result["ngay_cap"] = (
+        match.group(1) if match else None
+    )
+
+    return result
+    
