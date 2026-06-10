@@ -189,7 +189,7 @@ def parse_front(text: str) -> dict:
     patterns = {
         "so": r"Số\s*:\s*(.+)",
         "ho_va_ten": r"Họ\s*và\s*tên\s*:\s*(.+)",
-        "ngay_sinh": r"Ngày\s*sinh\s*[:\-]?\s*(\d{2}/\d{2}/\d{4})",
+        "ngay_sinh": r"Ng.*?sinh\s*[:\-]?\s*(\d{2}/\d{2}/\d{4})",
         "gioi_tinh": r"Giới\s*tính\s*:\s*(.+)",
         "quoc_tich": r"Quốc\s*tịch\s*:\s*(.+)",
         "que_quan": r"Quê\s*quán\s*:\s*(.+)",
