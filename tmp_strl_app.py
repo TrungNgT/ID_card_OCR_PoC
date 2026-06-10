@@ -1,7 +1,7 @@
 import streamlit as st
 
 dashboard = st.Page(
-    "tmp_strl_app.py",
+    "demo_strl_app.py",
     title="Demo",
     default=True
 )
